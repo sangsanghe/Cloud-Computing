@@ -48,7 +48,24 @@ public class ProgramResource {
 				for(Course c: s.courses){
 					if(c.CourseId == classId) return c.CourseId + c.board + c.lectures + c.students;
 				}
-				return s.programId + " has " + s.courses[0].CourseId + ", " + s.courses[1].CourseId;
+				return "No such CourseId";
+			}
+		}
+		return "No such programId!";
+    }
+    
+    //get a class's board of a program
+    //other information(lectures, students) as same way, not shown here
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("/classes/{classId}/board")
+    public String getClassBoard(@PathParam("programId") String programId, @PathParam("classId") int classId) {
+    	for(Program s: programs) {
+			if(s.programId.equals(programId)) {
+				for(Course c: s.courses){
+					if(c.CourseId == classId) return c.board;
+				}
+				return "No such CourseId";
 			}
 		}
 		return "No such programId!";
