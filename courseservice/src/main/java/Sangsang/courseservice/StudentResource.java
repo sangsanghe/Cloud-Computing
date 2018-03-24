@@ -1,9 +1,6 @@
-package Sangsang.courseservice;
+package org.jim.csye6225.courseservice;
 
-import javax.ws.rs.core.MediaType;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -13,94 +10,72 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-@Path("/students/{studentId}")
+import javax.ws.rs.core.MediaType;
+
+import org.jim.csye6225.courseservice.database.DynamoDB;
+
+@Path("programs/{programId}/students")
 public class StudentResource {
-	static List<Student> students = new ArrayList<>();
-	public StudentResource() {
-		students.add(new Student("Sang", 123, "jpg", null, "IS"));
-		students.add(new Student("Jin", 124, "jpg", null, "IS"));
-	}
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getSIt(@PathParam("studentId") int studentId) {
-		for(Student s: students) {
-			if(s.StudentId == studentId) {
-				return s.Name + s.StudentId + s.program + "***";
-			}
-		}
-		return "No such studentId!"+students.size();
-	}
 	
 	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/name")
-	public String getName(@PathParam("studentId") int studentId) {
-		for(Student s: students) {
-			if(s.StudentId == studentId) {
-				return s.Name;
-			}
-		}
-		return "No such studentId!"+students.size();
-	}
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/image")
-	public String getImage(@PathParam("studentId") int studentId) {
-		for(Student s: students) {
-			if(s.StudentId == studentId) {
-				return s.image;
-			}
-		}
-		return "No such studentId!"+students.size();
-	}
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/program")
-	public String getProgram(@PathParam("studentId") int studentId) {
-		for(Student s: students) {
-			if(s.StudentId == studentId) {
-				return s.program;
-			}
-		}
-		return "No such studentId!"+students.size();
-	}
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/courses")
-	public String getCourses(@PathParam("studentId") int studentId) {
-		for(Student s: students) {
-			if(s.StudentId == studentId) {
-				return ""+s.courses;
-			}
-		}
-		return "No such studentId!"+students.size();
+	@Produces(MediaType.APPLICATION_JSON)
+	public Set<String> getStudentsInProgram(@PathParam("programId") String programId) {
+		DynamoDB dynamoDB = DynamoDB.getInstance();
+		Program program = (Program)dynamoDB.getItem("Programs", programId);
+		return program.getStudents();
 	}
 	
 	@POST
-	@Consumes(MediaType.TEXT_PLAIN)
-	public String postStudent(@PathParam("studentId") int studentId) {
-		students.add(new Student(studentId));
-		return ""+students.size();
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Student createStudent(@PathParam("programId") String programId, Student student) {
+		DynamoDB dynamoDB = DynamoDB.getInstance();
+		Program program = (Program)dynamoDB.getItem("Programs", programId);
+		if(dynamoDB.contains("Students", student.id) || program == null)
+			return null;
+		
+		program.getStudents().add(student.id);
+		dynamoDB.addOrUpdateItem(program);
+		dynamoDB.addOrUpdateItem(student);
+		return student;
+	}
+	
+	@GET
+	@Path("{studentId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Student getStudent(@PathParam("studentId") String studentId) {
+		DynamoDB dynamoDB = DynamoDB.getInstance();
+		return (Student)dynamoDB.getItem("Students", studentId);
 	}
 	
 	@PUT
-	@Path("/{name}/{program}")
-	public void updateStudent(@PathParam("studentId") int studentId, @PathParam("name") String name, @PathParam("program") String program) {
-		for(Student s: students) {
-			if(s.StudentId == studentId) {
-				s.Name = name;
-				s.program = program;
-			}
-		}
+	@Path("{studentId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Student updateStudent(Student student, @PathParam("studentId") String studentId
+			, @PathParam("programId") String programId) {
+		DynamoDB dynamoDB = DynamoDB.getInstance();
+		Program program = (Program)dynamoDB.getItem("Programs", programId);
+		if(program == null)
+			return null;
+		
+		program.getStudents().add(studentId);
+		dynamoDB.addOrUpdateItem(program);
+		dynamoDB.addOrUpdateItem(student);
+		return student;
 	}
 	
 	@DELETE
-	public void deleteStudent(@PathParam("studentId") int studentId) {
-		for(Student s: students) {
-			if(s.StudentId == studentId) {
-				students.remove(s);
-			}
-		}
+	@Path("{studentId}")
+	public void deleteStudent(@PathParam("programId") String programId
+			, @PathParam("studentId") String studentId) {
+		DynamoDB dynamoDB = DynamoDB.getInstance();
+		Program program = (Program)dynamoDB.getItem("Programs", programId);
+		if(program == null)
+			return;
+		
+		program.getStudents().remove(studentId);
+		dynamoDB.addOrUpdateItem(program);
+		dynamoDB.deleteItem("Students", studentId);
 	}
-	
 }

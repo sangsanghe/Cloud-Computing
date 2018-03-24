@@ -1,7 +1,6 @@
-package Sangsang.courseservice;
+package org.jim.csye6225.courseservice;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -13,91 +12,53 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.jim.csye6225.courseservice.database.DynamoDB;
 
-@Path("/program/{programId}")
+@Path ("programs")
 public class ProgramResource {
-	static List<Program> programs = new ArrayList<>();
-	public ProgramResource () {
-		programs.add(new Program(new Course[]{new Course(7500),new Course(6250)}, "IS"));
-		programs.add(new Program(new Course[]{new Course(7550),new Course(6200)}, "CS"));
-	}
-    /**
-     * Method handling HTTP GET requests. The returned object will be sent
-     * to the client as "text/plain" media type.
-     *
-     * @return String that will be returned as a text/plain response.
-     */
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getIt(@PathParam("programId") String programId) {
-    	for(Program s: programs) {
-			if(s.programId.equals(programId)) {
-				return s.programId + " has " + s.courses[0].CourseId + ", " + s.courses[1].CourseId;
-			}
-		}
-		return "No such programId!";
-    }
-    
-    //get a class of a program
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("/classes/{classId}")
-    public String getClass(@PathParam("programId") String programId, @PathParam("classId") int classId) {
-    	for(Program s: programs) {
-			if(s.programId.equals(programId)) {
-				for(Course c: s.courses){
-					if(c.CourseId == classId) return c.CourseId + c.board + c.lectures + c.students;
-				}
-				return "No such CourseId";
-			}
-		}
-		return "No such programId!";
-    }
-    
-    //get a class's board of a program
-    //other information(lectures, students) as same way, not shown here
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("/classes/{classId}/board")
-    public String getClassBoard(@PathParam("programId") String programId, @PathParam("classId") int classId) {
-    	for(Program s: programs) {
-			if(s.programId.equals(programId)) {
-				for(Course c: s.courses){
-					if(c.CourseId == classId) return c.board;
-				}
-				return "No such CourseId";
-			}
-		}
-		return "No such programId!";
-    }
-    
-    
-    @POST
-	@Consumes(MediaType.TEXT_PLAIN)
-	public void postProgram(@PathParam("programId") String programId) {
-		programs.add(new Program(programId));
-	}
-    
-	@DELETE
-	public void deleteProgram(@PathParam("programId") String programId) {
-		for(Program s: programs) {
-			if(s.programId.equals(programId)) {
-				programs.remove(s);
-			}
-		}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Set<String> getProgramList() {
+		return DynamoDB.getInstance().getAllItems("Programs");
 	}
 	
-	//delete a class of a program
-	@DELETE
-	@Path("/classes/{classId}")
-	public void deleteClass(@PathParam("programId") String programId, @PathParam("classId") int classId) {
-		for(Program s: programs) {
-			if(s.programId.equals(programId)) {
-				for(Course c: s.courses) {
-					if(c.CourseId == classId) c = null;
-				}
-			}
-		}
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Program createProgram(Program program) {
+		DynamoDB dynamoDB = DynamoDB.getInstance();
+		if(dynamoDB.contains("Programs", program.id))
+			return null;
+		
+		dynamoDB.addOrUpdateItem(program);
+		return program;
 	}
-    
+	
+	@GET
+	@Path("{programId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Program getProgram(@PathParam("programId") String programId) {
+		DynamoDB dynamoDB = DynamoDB.getInstance();
+		BasicObject object = dynamoDB.getItem("Programs", programId);
+		return (Program)object;
+	}
+	
+	@PUT
+	@Path("{programId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Program updateProgram(@PathParam("programId") String programId
+			, Program program) {
+		DynamoDB dynamoDB = DynamoDB.getInstance();
+		dynamoDB.addOrUpdateItem(program);	
+		return program;
+	}
+	
+	@DELETE
+	@Path("{programId}")
+	public void deleteProgram(@PathParam("programId") String programId) {
+		DynamoDB dynamoDB = DynamoDB.getInstance();
+		dynamoDB.deleteItem("Programs", programId);
+	}
 }
