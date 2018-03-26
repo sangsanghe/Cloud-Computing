@@ -1,4 +1,4 @@
-package org.jim.csye6225.courseservice;
+package sangsang.courseservice;
 
 import java.util.Set;
 
@@ -12,7 +12,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.jim.csye6225.courseservice.database.DynamoDB;
+import sangsang.courseservice.database.DynamoDB;
 
 @Path ("programs")
 public class ProgramResource {

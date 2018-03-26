@@ -1,24 +1,23 @@
-package org.jim.csye6225.courseservice;
+package Sangsang.courseservice;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import org.jim.csye6225.courseservice.database.DynamoDBSetCoverter;
-
+import sangsang.courseservice.database.DynamoDBSetCoverter;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
 
 @DynamoDBTable(tableName = "Students")
-public class Student extends BasicObject{
+public class Student {
+	public String studentId;
 	public String studentName;
 	public String email;
 	public Set<String> courses;
 	
 	@DynamoDBHashKey(attributeName = "StudentId")
-	public String getId() { return this.id; }
-	public void setId(String id) { this.id = id;}
+	public String getId() { return this.studentId; }
+	public void setId(String studentId) { this.studentId = studentId;}
 	
 	@DynamoDBAttribute(attributeName = "StudentName")
 	public String getName() { return this.studentName; } 

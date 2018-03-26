@@ -1,7 +1,6 @@
-package org.jim.csye6225.courseservice;
+package Sangsang.courseservice;
 
 import java.util.Set;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -11,12 +10,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import org.jim.csye6225.courseservice.database.DynamoDB;
+import Sangsang.courseservice.database.DynamoDB;
 
 @Path("courses/{courseId}/announcements")
 public class AnnouncementResource {
 	
+	//get a class's board(announcements) of a program
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Set<String> getAnnouncementList(@PathParam("courseId") String courseId) {
@@ -30,16 +29,15 @@ public class AnnouncementResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Announcement createAnnouncement(Announcement announcement
-			, @PathParam("courseId") String courseId) {
+	public Announcement createAnnouncement(Announcement announcement, @PathParam("courseId") String courseId) {
 		DynamoDB dynamoDB = DynamoDB.getInstance();
-		if(dynamoDB.contains("Announcements", announcement.id))
+		if(dynamoDB.contains("Announcements", announcement.announcementId))
 			return null;
 		
 		announcement.setCourseId(courseId);
 		dynamoDB.addOrUpdateItem(announcement);
 		Course course = (Course) dynamoDB.getItem("Courses", courseId);
-		course.getAnnouncements().add(announcement.id);
+		course.getAnnouncements().add(announcement.announcementId);
 		dynamoDB.addOrUpdateItem(course);
 		return announcement;
 	}
@@ -57,12 +55,10 @@ public class AnnouncementResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Announcement updateAnnouncement(Announcement announcement
-			, @PathParam("courseId") String courseId
 			, @PathParam("announcementId") String announcementId) {
-		if(!announcement.id.equals(announcementId))
+		if(!announcement.announcementId.equals(announcementId))
 			return null;
 		DynamoDB dynamoDB = DynamoDB.getInstance();
-		announcement.setCourseId(courseId);
 		dynamoDB.addOrUpdateItem(announcement);
 		return announcement;
 	}

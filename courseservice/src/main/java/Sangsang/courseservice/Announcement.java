@@ -1,24 +1,25 @@
-package org.jim.csye6225.courseservice;
+package Sangsang.courseservice;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 @DynamoDBTable(tableName = "Announcements")
-public class Announcement extends BasicObject{
+public class Announcement {
 	
-	public String courseId;
-	public String text;
+	public String announcementId;
+	public String professorId;
+	public String contents;
 	
 	@DynamoDBHashKey(attributeName = "AnnouncementId")
-	public String getId() { return this.id; }
-	public void setId(String id) { this.id = id;}
+	public String getId() { return this.announcementId; }
+	public void setId(String announcementId) { this.announcementId = announcementId;}
 	
-	@DynamoDBAttribute(attributeName = "CourseId")
-	public String getCourseId() { return this.courseId; }
-	public void setCourseId(String courseId) { this.courseId = courseId; }
+	@DynamoDBAttribute(attributeName = "ProfessorId")
+	public String getProfessorId() { return this.professorId; }
+	public void setProfessorId(String professorId) { this.professorId = professorId; }
 	
-	@DynamoDBAttribute(attributeName = "Text")
-	public String getText() { return this.text; }
-	public void setText(String text) { this.text = text; }
+	@DynamoDBAttribute(attributeName = "Contents")
+	public String getContents() { return this.contents; }
+	public void setContents(String contents) { this.contents = contents; }
 }

@@ -1,4 +1,4 @@
-package org.jim.csye6225.courseservice.database;
+package sangsang.courseservice.database;
 
 import java.util.HashSet;
 import java.util.Set;

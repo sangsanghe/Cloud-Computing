@@ -1,35 +1,32 @@
-package org.jim.csye6225.courseservice;
+package Sangsang.courseservice;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import org.jim.csye6225.courseservice.database.DynamoDBSetCoverter;
-
+import Sangsang.courseservice.database.DynamoDBSetCoverter;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+
 @DynamoDBTable(tableName = "Courses")
-public class Course extends BasicObject{
-	
+public class Course {
+	public String courseId;
 	public String courseName;
-	public String professorId;
-	public Set<String> announcements;
-	public Set<String> students;
+	public String programId;
 	public Set<String> lectures;
-	//board, roster
+	public Set<String> announcements;
 	
 	@DynamoDBHashKey(attributeName = "CourseId")
-	public String getId() { return this.id; }
-	public void setId(String courseId) { this.id =  courseId; } 
+	public String getId() { return this.courseId; }
+	public void setId(String courseId) { this.courseId =  courseId; } 
+	
+	@DynamoDBHashKey(attributeName = "ProgramId")
+	public String getProgramId() { return this.courseId; }
+	public void setProgramId(String courseId) { this.courseId =  courseId; } 
 	
 	@DynamoDBAttribute(attributeName = "CourseName")
 	public String getCourseName() { return this.courseName; }
 	public void setCourseName(String courseName) { this.courseName = courseName; }
-	
-	@DynamoDBAttribute(attributeName = "ProfessorId")
-	public String getProfessorId() { return this.professorId; }
-	public void setProfessorId(String professorId) { this.professorId = professorId; }
 	
 	@DynamoDBAttribute(attributeName = "Announcements")
 	@DynamoDBTypeConverted(converter = DynamoDBSetCoverter.class)
@@ -40,16 +37,7 @@ public class Course extends BasicObject{
 	} 
 	
 	public void setAnnouncements(Set<String> announcements) { this.announcements = announcements; }
-	
-	@DynamoDBAttribute(attributeName = "Students")
-	@DynamoDBTypeConverted(converter = DynamoDBSetCoverter.class)
-	public Set<String> getStudents() {
-		if(this.students == null)
-			this.students = new HashSet<>();
-		return this.students;
-	} 
-	
-	public void setStudents(Set<String> students) { this.students = students; }
+
 	
 	@DynamoDBAttribute(attributeName = "Lectures")
 	@DynamoDBTypeConverted(converter = DynamoDBSetCoverter.class)

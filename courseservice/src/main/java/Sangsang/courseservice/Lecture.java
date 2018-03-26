@@ -1,4 +1,4 @@
-package org.jim.csye6225.courseservice;
+package Sangsang.courseservice;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,13 +11,14 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
 
 @DynamoDBTable(tableName = "Lectures")
-public class Lecture extends BasicObject{
+public class Lecture {
 	public String topic;
 	public Set<String> notes;
+	public String lectureId;
 	
 	@DynamoDBHashKey(attributeName = "LectureId")
-	public String getId() { return this.id; }
-	public void setId(String id) { this.id = id; }
+	public String getId() { return this.lectureId; }
+	public void setId(String lectureId) { this.lectureId = lectureId; }
 	
 	@DynamoDBAttribute(attributeName = "Topic")
 	public String getTopic() { return this.topic; }

@@ -1,4 +1,4 @@
-package org.jim.csye6225.courseservice.database;
+package sangsang.courseservice.database;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jim.csye6225.courseservice.Announcement;
-import org.jim.csye6225.courseservice.BasicObject;
-import org.jim.csye6225.courseservice.Course;
-import org.jim.csye6225.courseservice.Lecture;
-import org.jim.csye6225.courseservice.Note;
-import org.jim.csye6225.courseservice.Professor;
-import org.jim.csye6225.courseservice.Program;
-import org.jim.csye6225.courseservice.Student;
+import sangsang.courseservice.Announcement;
+import sangsang.courseservice.BasicObject;
+import sangsang.courseservice.Course;
+import sangsang.courseservice.Lecture;
+import sangsang.courseservice.Note;
+import sangsang.courseservice.Professor;
+import sangsang.courseservice.Program;
+import sangsang.courseservice.Student;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -45,18 +45,16 @@ public class DynamoDB {
 			// Please enter your own access_key_id and secret_access_key
 			BasicAWSCredentials awsCreds = new BasicAWSCredentials("access_key_id"
 					, "secret_access_key");
-			//DefaultAWSCredentialsProviderChain.getInstance()
 			dynamoDb = AmazonDynamoDBClientBuilder
 					.standard()
 					.withCredentials(new AWSStaticCredentialsProvider(awsCreds))
-					.withRegion(Regions.US_WEST_2)
+					.withRegion(Regions.US_EAST_1)
 					.build();
 			
 			mapper = new DynamoDBMapper(dynamoDb);
 			classMap.put("Programs", Program.class);
 			classMap.put("Courses", Course.class);
 			classMap.put("Students", Student.class);
-			classMap.put("Notes", Note.class);
 			classMap.put("Lectures", Lecture.class);
 			classMap.put("Announcements", Announcement.class);
 			classMap.put("Professors", Professor.class);
@@ -129,7 +127,6 @@ public class DynamoDB {
 		dynamoDB.createTable("Courses", "CourseId");
 		dynamoDB.createTable("Students", "StudentId");
 		dynamoDB.createTable("Lectures", "LectureId");
-		dynamoDB.createTable("Notes", "NoteId");
 		dynamoDB.createTable("Announcements", "AnnouncementId");
 		dynamoDB.createTable("Professors", "ProfessorId");
 	}
